@@ -2176,7 +2176,7 @@ function getUtils({verbose}) {
         setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
     }
 
-    // "Sun, 10 Jan 2021 22:22:22 GMT" -> "2021.01.10"
+    // "Sun, 10 Jan 2021 22:22:22 GMT" -> "2021-01-10 22-22-22"
     function dateToDayDateString(dateValue, utc = true) {
         const _date = new Date(dateValue);
         function pad(str) {
@@ -2186,8 +2186,11 @@ function getUtils({verbose}) {
         const year  = _date[`get${_utc}FullYear`]();
         const month = _date[`get${_utc}Month`]() + 1;
         const date  = _date[`get${_utc}Date`]();
+        const hours = _date[`get${_utc}Hours`]();
+        const minutes = _date[`get${_utc}Minutes`]();
+        const seconds = _date[`get${_utc}Seconds`]();
 
-        return year + "." + pad(month) + "." + pad(date);
+        return `${year}-${pad(month)}-${pad(date)} ${pad(hours)}-${pad(minutes)}-${pad(seconds)}`;
     }
 
     function addCSS(css) {
