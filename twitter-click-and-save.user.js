@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Twitter Click'n'Save
-// @version     1.13.0-2024.10.26
+// @version     1.13.0-2024.10.28
 // @namespace   gh.Kuzoa
 // @author      Kuzoa(Current Maintainer)
 // @authour     AlttiRi(Original Author)
