@@ -473,7 +473,7 @@ function hoistFeatures() {
 
             Features.verifyBlob(blob, url, btn);
 
-            const filename = `[twitter][bg] ${username}—${lastModifiedDate}—${id}—${seconds}.${extension}`;
+            const filename = `[twitter][bg] ${username} ${lastModifiedDate} ${id} ${seconds}.${extension}`;
             downloadBlob(blob, filename, url);
 
             Features._markButtonAsDownloaded(btn);
@@ -660,7 +660,10 @@ function hoistFeatures() {
             btnProgress.style.cssText = "--progress: 100%";
 
             const sampleText = !isSample ? "" : "[sample]";
-            const filename = `[twitter]${sampleText} ${author}—${lastModifiedDate}—${id}.${extension}`;
+            // 提取URL结尾处的数字
+            const urlObj = new URL(url);
+            const mediaId = urlObj.pathname.split('/').pop();
+            const filename = `[twitter]${sampleText} ${author} ${lastModifiedDate}—${id}-${mediaId}.${extension}`;
             downloadBlob(blob, filename, url);
 
             const downloaded = btn.classList.contains("ujs-already-downloaded") || btn.classList.contains("ujs-downloaded");
@@ -921,8 +924,12 @@ function hoistFeatures() {
             btnProgress.style.cssText = "--progress: 100%";
 
             Features.verifyBlob(blob, url, btn);
+            
+            // 提取URL结尾处的数字
+            const urlObj = new URL(url);
+            const mediaId = urlObj.pathname.split('/').pop();
 
-            const filename = `[twitter] ${author}—${lastModifiedDate}—${videoTweetId}.${extension}`;
+            const filename = `[twitter] ${author} ${lastModifiedDate} ${videoTweetId}-${mediaId}.${extension}`;
             downloadBlob(blob, filename, url);
 
             const downloaded = btn.classList.contains("ujs-already-downloaded");
