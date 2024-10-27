@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        Twitter Click'n'Save(Custom)
+// @name        Twitter Click'n'Save
 // @version     1.13.0-2024.10.26
 // @namespace   gh.Kuzoa
 // @author      Kuzoa(Current Maintainer)
