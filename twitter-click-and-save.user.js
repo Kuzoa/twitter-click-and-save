@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        Twitter Click'n'Save
+// @name        Twitter Click'n'Save(Custom)
 // @version     1.13.0-2024.10.26
 // @namespace   gh.Kuzoa
 // @author      Kuzoa(Current Maintainer)
@@ -454,7 +454,7 @@ function hoistFeatures() {
             btn.classList.remove("ujs-downloading");
             btn.classList.remove("ujs-recently-downloaded");
             btn.classList.add("ujs-downloaded");
-            btn.addEventListener("pointerenter", e => {
+            btn.addEventListener("pointerenter", () => {
                 btn.classList.add("ujs-recently-downloaded");
             }, {once: true});
         }
@@ -467,10 +467,9 @@ function hoistFeatures() {
 
             // https://pbs.twimg.com/profile_banners/34743251/1596331248/1500x500
             const {
-                id, seconds, res
-            } = url.match(/(?<=\/profile_banners\/)(?<id>\d+)\/(?<seconds>\d+)\/(?<res>\d+x\d+)/)?.groups || {};
+                id, seconds            } = url.match(/(?<=\/profile_banners\/)(?<id>\d+)\/(?<seconds>\d+)\/(?<res>\d+x\d+)/)?.groups || {};
 
-            const {blob, lastModifiedDate, extension, name} = await fetchResource(url);
+            const {blob, lastModifiedDate, extension} = await fetchResource(url);
 
             Features.verifyBlob(blob, url, btn);
 
@@ -552,7 +551,7 @@ function hoistFeatures() {
                     id: Tweet.of(btn).id,
                     url: btn.dataset.url
                 });
-                if (downloaded) {
+            if (downloaded) {
                     btn.classList.add("ujs-already-downloaded");
                 }
             }
@@ -654,14 +653,14 @@ function hoistFeatures() {
                 }
             }
 
-            const {blob, lastModifiedDate, extension, name} = await safeFetchResource(url);
+            const {blob, lastModifiedDate, extension} = await safeFetchResource(url);
 
             Features.verifyBlob(blob, url, btn);
 
             btnProgress.style.cssText = "--progress: 100%";
 
             const sampleText = !isSample ? "" : "[sample]";
-            const filename = `[twitter]${sampleText} ${author}—${lastModifiedDate}—${id}—${name}.${extension}`;
+            const filename = `[twitter]${sampleText} ${author}—${lastModifiedDate}—${id}.${extension}`;
             downloadBlob(blob, filename, url);
 
             const downloaded = btn.classList.contains("ujs-already-downloaded") || btn.classList.contains("ujs-downloaded");
@@ -712,7 +711,7 @@ function hoistFeatures() {
             const historyId = vidNumber ? id + "-" + vidNumber : id;
 
             const downloaded = downloadedVideoTweetIds.hasItem(historyId);
-            if (downloaded) {
+                    if (downloaded) {
                 btn.classList.add("ujs-already-downloaded");
             }
         }
@@ -787,8 +786,8 @@ function hoistFeatures() {
             const videos = document.querySelectorAll("video:not([data-handled])");
             for (const vid of videos) {
                 if (vid.dataset.handled) {
-                    continue;
-                }
+                        continue;
+                    }
                 vid.dataset.handled = "true";
                 verbose && console.log("[ujs][videoHandler][vid]", vid);
 
@@ -917,13 +916,13 @@ function hoistFeatures() {
                 }
             }
 
-            const {blob, lastModifiedDate, extension, name} = await safeFetchResource(url, onProgress);
+            const {blob, lastModifiedDate, extension} = await safeFetchResource(url, onProgress);
 
             btnProgress.style.cssText = "--progress: 100%";
 
             Features.verifyBlob(blob, url, btn);
 
-            const filename = `[twitter] ${author}—${lastModifiedDate}—${videoTweetId}—${name}.${extension}`;
+            const filename = `[twitter] ${author}—${lastModifiedDate}—${videoTweetId}.${extension}`;
             downloadBlob(blob, filename, url);
 
             const downloaded = btn.classList.contains("ujs-already-downloaded");
@@ -1017,7 +1016,7 @@ function hoistFeatures() {
             titleText = titleText.replace(new RegExp(`(?<=${CLOSE_QUOTE}) \\\/ ${I18N.TWITTER}$`), "");
             if (!lastUrlIsAttachment) {
                 const regExp = new RegExp(`(?<short> https:\\/\\/t\\.co\\/.{6,14})${CLOSE_QUOTE}$`);
-                titleText = titleText.replace(regExp, (match, p1, p2, offset, string) => `${CLOSE_QUOTE} —${p1}`);
+                titleText = titleText.replace(regExp, (match, p1) => `${CLOSE_QUOTE} —${p1}`);
             } else {
                 titleText = titleText.replace(lastUrl, `${lastUrl} (${attachmentDescription})`);
             }
@@ -1154,7 +1153,7 @@ function hoistFeatures() {
                 addCSS(`
                     #layers > div:nth-child(1) {
                         height: 1px;
-                        opacity: 0;
+    opacity: 0;
                     }
                 `);
             }
@@ -2135,24 +2134,18 @@ function getUtils({verbose}) {
             });
             const lastModifiedDateSeconds = response.headers.get("last-modified");
             const contentType = response.headers.get("content-type");
-
+    
             const lastModifiedDate = dateToDayDateString(lastModifiedDateSeconds);
             const extension = contentType ? extensionFromMime(contentType) : null;
-
+    
             if (onProgress) {
                 response = responseProgressProxy(response, onProgress);
             }
-
+    
             const blob = await response.blob();
-
-            // https://pbs.twimg.com/media/AbcdEFgijKL01_9?format=jpg&name=orig                                     -> AbcdEFgijKL01_9
-            // https://pbs.twimg.com/ext_tw_video_thumb/1234567890123456789/pu/img/Ab1cd2345EFgijKL.jpg?name=orig   -> Ab1cd2345EFgijKL.jpg
-            // https://video.twimg.com/ext_tw_video/1234567890123456789/pu/vid/946x720/Ab1cd2345EFgijKL.mp4?tag=10  -> Ab1cd2345EFgijKL.mp4
-            const _url = new URL(url);
-            const {filename} = (_url.origin + _url.pathname).match(/(?<filename>[^\/]+$)/).groups;
-
-            const {name} = filename.match(/(?<name>^[^.]+)/).groups;
-            return {blob, lastModifiedDate, contentType, extension, name, status: response.status};
+    
+    
+            return {blob, lastModifiedDate, contentType, extension, status: response.status};
         } catch (error) {
             verbose && console.error("[ujs][fetchResource]", url);
             verbose && console.error("[ujs][fetchResource]", error);
